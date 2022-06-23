@@ -194,7 +194,7 @@ class Grid {
      * @method GetAdjacent A helper function to easily search around the parent node
      * @param {PathNode} node The parent node to search around
      * @param {Array} offset An array containing the x and y indices of the offset to be applied to the parent position
-     * @returns {PathNode}  The child node if the search cell is navigable or null if not
+     * @returns {PathNode} The child node if the search cell is navigable, otherwise null
      */
     GetAdjacent(node, offset = [0, 0]) {
         let indexExists = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== undefined;
@@ -203,6 +203,20 @@ class Grid {
             return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * @method CompareNodes A helper function to easily determine the equality of two nodes
+     * @param {PathNode} node1 
+     * @param {PAthNode} node2 
+     * @returns {Boolean} True if both nodes are equal, false if not
+     */
+    CompareNodes(node1, node2) {
+        if (node1.position[0] == node2.position[0] && node1.position[2] == node2.position[2]) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
