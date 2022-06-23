@@ -100,8 +100,20 @@ class Grid {
             const newPositions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
             newPositions.forEach((position) => {
                 let adjacentNode = this.GetAdjacent(currentNode, position);
-                if (adjacentNode) {
-                    children.push(adjacentNode); // Add all adjacent spaces which are not walls and are not closed to the list
+
+                if (adjacentNode !== null) {
+
+                    let isClosed = false;
+
+                    closed.forEach((pathnode) => {
+                        if (this.CompareNodes(pathnode, adjacentNode)) {
+                            isClosed = true;
+                        }
+                    });
+
+                    if (!isClosed) {
+                        children.push(adjacentNode); // Add all adjacent spaces which are not walls and are not closed to the list
+                    }
                 }
             });
 
@@ -197,7 +209,7 @@ class Grid {
      * @returns {PathNode} The child node if the search cell is navigable, otherwise null
      */
     GetAdjacent(node, offset = [0, 0]) {
-        let indexExists = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== undefined;
+        let indexExists = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== undefined; //TODO Redo indexExists; causes errors to check this way
         let isNavigable = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== 1;
         if (indexExists && isNavigable) {
             return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
@@ -213,7 +225,9 @@ class Grid {
      * @returns {Boolean} True if both nodes are equal, false if not
      */
     CompareNodes(node1, node2) {
-        if (node1.position[0] == node2.position[0] && node1.position[2] == node2.position[2]) {
+        console.log(node1);
+        console.log(node2);
+        if (node1.position[0] === node2.position[0] && node1.position[2] === node2.position[2]) {
             return true;
         } else {
             return false;
