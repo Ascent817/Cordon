@@ -97,7 +97,9 @@ class Grid {
             // Get all adjacent cells and add them as children to the current node
             let children = [];
 
-            const newPositions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
+            const newPositions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+            // [0, 1], [1, 0], [0, -1], [-1, 0]
+            // [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]
             newPositions.forEach((position) => {
                 let adjacentNode = this.GetAdjacent(currentNode, position);
 
@@ -128,7 +130,7 @@ class Grid {
                     }
                 });
 
-                if (isInClosed == false) { // If the child isn't already in the closed list, continue
+                if (!isInClosed) { // If the child isn't in the closed list, continue
                     // Find the distances between the child, the start, and the end
                     let childToCurrent = ((child.position[0] - currentNode.position[0]) ** 2) + ((child.position[1] - currentNode.position[1]) ** 2);
                     let childToEnd = ((child.position[0] - goal[0]) ** 2) + ((child.position[1] - goal[1]) ** 2);
@@ -151,12 +153,8 @@ class Grid {
                     }
 
                     if (isInOpen) { // The child is in the open list
-
-                        console.log(open[childIndex]);
-                        console.log(child);
-
-                        if ((child.g < open[childIndex].g)) { // The child g isn't greater than the copy in the open list
-                            open[childIndex].parent = currentNode;
+                        if (!(child.g > open[childIndex].g)) { // The child g isn't greater than the copy in the open list
+                            open.push(child);
                         }
                     } else {
                         open.push(child);

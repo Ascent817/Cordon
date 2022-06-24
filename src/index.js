@@ -2,7 +2,7 @@
  * Example usage of Cordon. Not included in the module.
  */
 
-let grid = new Grid(20, 20, [5, 10], [15, 10]);
+let grid = new Grid(20, 20, [5, 10], [5, 15]);
 let cellWidth = 0;
 
 function setup() {
@@ -28,10 +28,12 @@ function draw() {
 
             drawGrid(grid.cells);
             
-            console.log(path);
+            let prevCoord = grid.FindCell(2);
             path.forEach((coords) => {
-                fill(0, 0, 255);
-                rect(coords[0] * cellWidth, coords[1] * cellWidth, cellWidth, cellWidth);
+                strokeWeight(5);
+                stroke('yellow');
+                line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
+                prevCoord = coords;
             });
         }
     }
@@ -69,6 +71,7 @@ function drawGrid(grid = [[0, 0], [0, 0]]) {
                     break;
             }
             strokeWeight(0.5);
+            stroke('black');
             rect(x * cellWidth, y * cellWidth, cellWidth, cellWidth);
         }
     }
