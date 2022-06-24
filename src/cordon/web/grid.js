@@ -69,7 +69,7 @@ class Grid {
         // Add the location of end cell
         const goal = this.FindCell(this.targetCell); // This will be an array containing indices, e.g. [0, 3]
 
-        while (open.length > 0 && open.length < 10000) {
+        while (open.length > 0 && open.length < 100000) {
 
             // Find the node with the lowest f-cost to start with
             let currentNode = open[0]; // Just use the first node as a default. Remember, the open list will always have at least one item when in this loop
@@ -82,7 +82,7 @@ class Grid {
             open.splice(open.findIndex((element) => element == currentNode), 1); // Remove current node from open list
             closed.push(currentNode); // Add the current node to the closed list
 
-            if (currentNode.position == goal) {
+            if (currentNode.position[0] === goal[0] && currentNode.position[1] === goal[1]) {
                 // follow parents back to get the path
                 let path = [];
                 let tempNode = currentNode;
@@ -139,10 +139,22 @@ class Grid {
                     child.f = child.g + child.h;
 
                     // Child is already in open list
-                    let childIndex = open.findIndex((element) => element.position === child.position); // Returns an index if the child is in the open list
-                    console.log(childIndex);
-                    let isInOpen = childIndex !== -1;
+                    let isInOpen = false;
+                    let childIndex = -1;
+
+                    for (let i = 0; i < open.length; i++) {
+                        let element = open[i];
+                        if (this.CompareNodes(element, child)) {
+                            isInOpen = true;
+                            childIndex = i;
+                        }
+                    }
+
                     if (isInOpen) { // The child is in the open list
+
+                        console.log(open[childIndex]);
+                        console.log(child);
+
                         if ((child.g < open[childIndex].g)) { // The child g isn't greater than the copy in the open list
                             open[childIndex].parent = currentNode;
                         }
@@ -209,10 +221,25 @@ class Grid {
      * @returns {PathNode} The child node if the search cell is navigable, otherwise null
      */
     GetAdjacent(node, offset = [0, 0]) {
-        let indexExists = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== undefined; //TODO Redo indexExists; causes errors to check this way
-        let isNavigable = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== 1;
-        if (indexExists && isNavigable) {
-            return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
+        let indexExists = false;
+
+        // Check whether index exists
+        if ((node.position[0] + offset[0]) > 0 && (node.position[0] + offset[0]) < this.cells.length) {
+            if ((node.position[1] + offset[1]) > 0 && (node.position[1] + offset[1]) < this.cells[0].length) {
+                indexExists = true;
+            }
+        }
+
+        if (indexExists) {
+
+            let isNavigable = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== 1;
+
+            if (isNavigable) {
+                return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
+            } else {
+                return null;
+            }
+
         } else {
             return null;
         }
@@ -221,13 +248,11 @@ class Grid {
     /**
      * @method CompareNodes A helper function to easily determine the equality of two nodes
      * @param {PathNode} node1 
-     * @param {PAthNode} node2 
+     * @param {PathNode} node2 
      * @returns {Boolean} True if both nodes are equal, false if not
      */
     CompareNodes(node1, node2) {
-        console.log(node1);
-        console.log(node2);
-        if (node1.position[0] === node2.position[0] && node1.position[2] === node2.position[2]) {
+        if (node1.position[0] === node2.position[0] && node1.position[1] === node2.position[1]) {
             return true;
         } else {
             return false;

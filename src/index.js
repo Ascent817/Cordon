@@ -25,7 +25,14 @@ function draw() {
             fill(0);
             rect(cellX * cellWidth, cellY * cellWidth, cellWidth, cellWidth);
             let path = grid.SolvePath();
+
+            drawGrid(grid.cells);
+            
             console.log(path);
+            path.forEach((coords) => {
+                fill(0, 0, 255);
+                rect(coords[0] * cellWidth, coords[1] * cellWidth, cellWidth, cellWidth);
+            });
         }
     }
 }
