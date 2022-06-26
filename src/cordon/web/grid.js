@@ -97,7 +97,7 @@ class Grid {
             // Get all adjacent cells and add them as children to the current node
             let children = [];
 
-            const newPositions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+            const newPositions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
             // [0, 1], [1, 0], [0, -1], [-1, 0]
             // [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]
             newPositions.forEach((position) => {
@@ -132,11 +132,13 @@ class Grid {
 
                 if (!isInClosed) { // If the child isn't in the closed list, continue
                     // Find the distances between the child, the start, and the end
-                    let childToCurrent = ((child.position[0] - currentNode.position[0]) ** 2) + ((child.position[1] - currentNode.position[1]) ** 2);
-                    let childToEnd = ((child.position[0] - goal[0]) ** 2) + ((child.position[1] - goal[1]) ** 2);
+                    let childToCurrent = Math.sqrt((child.position[0] - currentNode.position[0]) ** 2) + ((child.position[1] - currentNode.position[1]) ** 2) * 10;
+                    let childToEnd = Math.sqrt((child.position[0] - goal[0]) ** 2) + ((child.position[1] - goal[1]) ** 2) * 10;
+
+                    console.log(childToCurrent);
 
                     // Update child values
-                    child.g = currentNode.g + childToCurrent;
+                    child.g = currentNode.g + 1;
                     child.h = childToEnd;
                     child.f = child.g + child.h;
 
@@ -153,8 +155,11 @@ class Grid {
                     }
 
                     if (isInOpen) { // The child is in the open list
-                        if (!(child.g > open[childIndex].g)) { // The child g isn't greater than the copy in the open list
-                            open.push(child);
+                        if (child.g < open[childIndex].g) { // The child g isn't greater than the copy in the open list
+                            open[childIndex].parent = currentNode;
+                            open[childIndex].g = child.g;
+                            open[childIndex].h = child.h;
+                            open[childIndex].f = child.f;
                         }
                     } else {
                         open.push(child);

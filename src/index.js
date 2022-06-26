@@ -2,7 +2,7 @@
  * Example usage of Cordon. Not included in the module.
  */
 
-let grid = new Grid(20, 20, [5, 10], [5, 15]);
+let grid = new Grid(70, 70, [5, 5], [45, 45]);
 let cellWidth = 0;
 
 function setup() {
