@@ -29,12 +29,16 @@ function draw() {
             drawGrid(grid.cells);
             
             let prevCoord = grid.FindCell(2);
-            path.forEach((coords) => {
-                strokeWeight(5);
-                stroke('yellow');
-                line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
-                prevCoord = coords;
-            });
+            try {
+                path.forEach((coords) => {
+                    strokeWeight(5);
+                    stroke('yellow');
+                    line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
+                    prevCoord = coords;
+                });
+            } catch {
+                console.log("Path not found.");
+            }
         }
     }
 }
