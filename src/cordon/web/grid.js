@@ -9,8 +9,9 @@ class Grid {
      * @param {Array} [start] Optional - An array with two items, x and y, to be used as 0-based indices for the start cell
      * @param {Array} [target] Optional - An array with two items, x and y, to be used as 0-based indices for the target cell
      * @param {Boolean} useDiagonals Optional - Whether to use diagonals in the path, defaults to true
+     * @param {Boolean} canCutCorners Optional - Whether the path can cut corners, defaults to false
      */
-    constructor(width, height, start, target, useDiagonals = true) {
+    constructor(width, height, start, target, useDiagonals = true, canCutCorners = false) {
         this.width = width;
         this.height = height;
 
@@ -37,6 +38,9 @@ class Grid {
 
         // Decide whether to use diagonals in the solved path
         this.useDiagonals = useDiagonals;
+
+        // Decide whether to cut corners in the solved path
+        this.canCutCorners = canCutCorners;
     }
 
     /**
@@ -239,8 +243,8 @@ class Grid {
         let indexExists = false;
 
         // Check whether index exists
-        if ((node.position[0] + offset[0]) > 0 && (node.position[0] + offset[0]) < this.cells.length) {
-            if ((node.position[1] + offset[1]) > 0 && (node.position[1] + offset[1]) < this.cells[0].length) {
+        if ((node.position[0] + offset[0]) >= 0 && (node.position[0] + offset[0]) < this.cells.length) {
+            if ((node.position[1] + offset[1]) >= 0 && (node.position[1] + offset[1]) < this.cells[0].length) {
                 indexExists = true;
             }
         }
@@ -248,8 +252,15 @@ class Grid {
         if (indexExists) {
 
             let isNavigable = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== 1;
+            let areCornersOpen;
 
-            if (isNavigable) {
+            if (this.canCutCorners) {
+                areCornersOpen = true;
+            } else {
+                areCornersOpen = (this.cells[node.position[0] + offset[0]][node.position[1]] !== 1) && (this.cells[node.position[0]][node.position[1] + offset[1]] !== 1);
+            }
+
+            if (isNavigable && areCornersOpen) {
                 return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
             } else {
                 return null;
