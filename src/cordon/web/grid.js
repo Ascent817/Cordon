@@ -132,13 +132,20 @@ class Grid {
 
                 if (!isInClosed) { // If the child isn't in the closed list, continue
                     // Find the distances between the child, the start, and the end
-                    let childToCurrent = Math.sqrt((child.position[0] - currentNode.position[0]) ** 2) + ((child.position[1] - currentNode.position[1]) ** 2) * 10;
-                    let childToEnd = Math.sqrt((child.position[0] - goal[0]) ** 2) + ((child.position[1] - goal[1]) ** 2) * 10;
 
-                    console.log(childToCurrent);
+                    // Set up variables for use in the heuristic formulas
+                    let x1 = child.position[0];
+                    let y1 = child.position[1];
+                    let x2 = currentNode.position[0];
+                    let y2 = currentNode.position[1];
+                    let x3 = goal[0];
+                    let y3 = goal[1];
+
+                    let childToCurrent = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) * 10;
+                    let childToEnd = Math.sqrt(Math.pow(x1 - x3, 2) + Math.pow(y1 - y3, 2)) * 10;
 
                     // Update child values
-                    child.g = currentNode.g + 1;
+                    child.g = currentNode.g + childToCurrent;
                     child.h = childToEnd;
                     child.f = child.g + child.h;
 
