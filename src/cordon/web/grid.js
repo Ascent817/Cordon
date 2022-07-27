@@ -8,8 +8,9 @@ class Grid {
      * @param {Integer} height Height of the grid in cells
      * @param {Array} [start] Optional - An array with two items, x and y, to be used as 0-based indices for the start cell
      * @param {Array} [target] Optional - An array with two items, x and y, to be used as 0-based indices for the target cell
+     * @param {Boolean} useDiagonals Optional - Whether to use diagonals in the path, defaults to true
      */
-    constructor(width, height, start, target) {
+    constructor(width, height, start, target, useDiagonals = true) {
         this.width = width;
         this.height = height;
 
@@ -33,6 +34,9 @@ class Grid {
         if (target) {
             this.SetCell(target[0], target[1], this.targetCell);
         }
+
+        // Decide whether to use diagonals in the solved path
+        this.useDiagonals = useDiagonals;
     }
 
     /**
@@ -97,9 +101,10 @@ class Grid {
             // Get all adjacent cells and add them as children to the current node
             let children = [];
 
-            const newPositions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
-            // [0, 1], [1, 0], [0, -1], [-1, 0]
-            // [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]
+            const newPositions = this.useDiagonals
+                ? [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]] 
+                : [[0, 1], [1, 0], [0, -1], [-1, 0]];
+
             newPositions.forEach((position) => {
                 let adjacentNode = this.GetAdjacent(currentNode, position);
 
