@@ -64,7 +64,7 @@ class Grid {
      */
     SolvePath() {
         // First, check that there is only one start and end cell.
-        if (this.IsValid() == false) {
+        if (this.IsValid() === false) {
             throw "There can be exactly one start and end cell, but either none or too many were found!";
         }
 
@@ -106,7 +106,7 @@ class Grid {
             let children = [];
 
             const newPositions = this.useDiagonals
-                ? [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]] 
+                ? [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
                 : [[0, 1], [1, 0], [0, -1], [-1, 0]];
 
             newPositions.forEach((position) => {
