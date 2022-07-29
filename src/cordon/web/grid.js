@@ -8,8 +8,10 @@ class Grid {
      * @param {Integer} height Height of the grid in cells
      * @param {Array} [start] Optional - An array with two items, x and y, to be used as 0-based indices for the start cell
      * @param {Array} [target] Optional - An array with two items, x and y, to be used as 0-based indices for the target cell
+     * @param {Boolean} useDiagonals Optional - Whether to use diagonals in the path, defaults to true
+     * @param {Boolean} canCutCorners Optional - Whether the path can cut corners, defaults to false
      */
-    constructor(width, height, start, target) {
+    constructor(width, height, start, target, useDiagonals = true, canCutCorners = false) {
         this.width = width;
         this.height = height;
 
@@ -33,6 +35,12 @@ class Grid {
         if (target) {
             this.SetCell(target[0], target[1], this.targetCell);
         }
+
+        // Decide whether to use diagonals in the solved path
+        this.useDiagonals = useDiagonals;
+
+        // Decide whether to cut corners in the solved path
+        this.canCutCorners = canCutCorners;
     }
 
     /**
@@ -56,7 +64,7 @@ class Grid {
      */
     SolvePath() {
         // First, check that there is only one start and end cell.
-        if (this.IsValid() == false) {
+        if (this.IsValid() === false) {
             throw "There can be exactly one start and end cell, but either none or too many were found!";
         }
 
@@ -97,9 +105,10 @@ class Grid {
             // Get all adjacent cells and add them as children to the current node
             let children = [];
 
-            const newPositions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
-            // [0, 1], [1, 0], [0, -1], [-1, 0]
-            // [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]
+            const newPositions = this.useDiagonals
+                ? [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
+                : [[0, 1], [1, 0], [0, -1], [-1, 0]];
+
             newPositions.forEach((position) => {
                 let adjacentNode = this.GetAdjacent(currentNode, position);
 
@@ -132,10 +141,17 @@ class Grid {
 
                 if (!isInClosed) { // If the child isn't in the closed list, continue
                     // Find the distances between the child, the start, and the end
-                    let childToCurrent = Math.sqrt((child.position[0] - currentNode.position[0]) ** 2) + ((child.position[1] - currentNode.position[1]) ** 2) * 10;
-                    let childToEnd = Math.sqrt((child.position[0] - goal[0]) ** 2) + ((child.position[1] - goal[1]) ** 2) * 10;
 
-                    console.log(childToCurrent);
+                    // Set up variables for use in the heuristic formulas
+                    let x1 = child.position[0];
+                    let y1 = child.position[1];
+                    let x2 = currentNode.position[0];
+                    let y2 = currentNode.position[1];
+                    let x3 = goal[0];
+                    let y3 = goal[1];
+
+                    let childToCurrent = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) * 10;
+                    let childToEnd = Math.sqrt(Math.pow(x1 - x3, 2) + Math.pow(y1 - y3, 2)) * 10;
 
                     // Update child values
                     child.g = currentNode.g + childToCurrent;
@@ -227,8 +243,8 @@ class Grid {
         let indexExists = false;
 
         // Check whether index exists
-        if ((node.position[0] + offset[0]) > 0 && (node.position[0] + offset[0]) < this.cells.length) {
-            if ((node.position[1] + offset[1]) > 0 && (node.position[1] + offset[1]) < this.cells[0].length) {
+        if ((node.position[0] + offset[0]) >= 0 && (node.position[0] + offset[0]) < this.cells.length) {
+            if ((node.position[1] + offset[1]) >= 0 && (node.position[1] + offset[1]) < this.cells[0].length) {
                 indexExists = true;
             }
         }
@@ -236,8 +252,15 @@ class Grid {
         if (indexExists) {
 
             let isNavigable = this.cells[node.position[0] + offset[0]][node.position[1] + offset[1]] !== 1;
+            let areCornersOpen;
 
-            if (isNavigable) {
+            if (this.canCutCorners) {
+                areCornersOpen = true;
+            } else {
+                areCornersOpen = (this.cells[node.position[0] + offset[0]][node.position[1]] !== 1) && (this.cells[node.position[0]][node.position[1] + offset[1]] !== 1);
+            }
+
+            if (isNavigable && areCornersOpen) {
                 return new PathNode(node, [node.position[0] + offset[0], node.position[1] + offset[1]]);
             } else {
                 return null;

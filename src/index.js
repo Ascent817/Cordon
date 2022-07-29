@@ -2,7 +2,8 @@
  * Example usage of Cordon. Not included in the module.
  */
 
-let grid = new Grid(70, 70, [5, 5], [45, 45]);
+let grid = new Grid(25, 25, [5, 5], [20, 20], true);
+
 let cellWidth = 0;
 
 function setup() {
@@ -13,33 +14,80 @@ function setup() {
 
     /* Set up the grid */
     drawGrid(grid.cells);
+
+    let gui = new dat.GUI();
+    let gridFolder = gui.addFolder('Simulation Settings');
+    gridFolder.add(grid, 'useDiagonals').onChange(() => {
+        let path = grid.SolvePath();
+
+        drawGrid(grid.cells);
+
+        let prevCoord = grid.FindCell(2);
+        try {
+            path.forEach((coords) => {
+                strokeWeight(5);
+                stroke('yellow');
+                line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
+                prevCoord = coords;
+            });
+        } catch {
+            console.log("Path not found.");
+        }
+    });
+    gridFolder.add(grid, 'canCutCorners').onChange(() => {
+        let path = grid.SolvePath();
+
+        drawGrid(grid.cells);
+
+        let prevCoord = grid.FindCell(2);
+        try {
+            path.forEach((coords) => {
+                strokeWeight(5);
+                stroke('yellow');
+                line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
+                prevCoord = coords;
+            });
+        } catch {
+            console.log("Path not found.");
+        }
+    });
+    gridFolder.open();
+    drawPath();
 }
 
 function draw() {
     if (mouseIsPressed) {
-        let cellX = Math.floor(mouseX / cellWidth)
-        let cellY = Math.floor(mouseY / cellWidth)
-        
-        if (cellX < grid.cells.length && cellY < grid.cells[0].length && cellX > -1 && cellY > -1) {
-            grid.SetCell(cellX, cellY, 1);
-            fill(0);
-            rect(cellX * cellWidth, cellY * cellWidth, cellWidth, cellWidth);
-            let path = grid.SolvePath();
+        Redraw();
+    }
+}
 
-            drawGrid(grid.cells);
-            
-            let prevCoord = grid.FindCell(2);
-            try {
-                path.forEach((coords) => {
-                    strokeWeight(5);
-                    stroke('yellow');
-                    line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
-                    prevCoord = coords;
-                });
-            } catch {
-                console.log("Path not found.");
-            }
-        }
+function Redraw() {
+    let cellX = Math.floor(mouseX / cellWidth);
+    let cellY = Math.floor(mouseY / cellWidth);
+
+    if (cellX < grid.cells.length && cellY < grid.cells[0].length && cellX > -1 && cellY > -1) {
+        grid.SetCell(cellX, cellY, 1);
+        fill(0);
+        rect(cellX * cellWidth, cellY * cellWidth, cellWidth, cellWidth);
+        drawPath();
+    }
+}
+
+function drawPath() {
+    let path = grid.SolvePath();
+
+    drawGrid(grid.cells);
+
+    let prevCoord = grid.FindCell(2);
+    try {
+        path.forEach((coords) => {
+            strokeWeight(5);
+            stroke('yellow');
+            line((coords[0] * cellWidth) + (cellWidth / 2), (coords[1] * cellWidth) + (cellWidth / 2), (prevCoord[0] * cellWidth) + (cellWidth / 2), (prevCoord[1] * cellWidth) + (cellWidth / 2));
+            prevCoord = coords;
+        });
+    } catch {
+        console.log("Path not found.");
     }
 }
 
