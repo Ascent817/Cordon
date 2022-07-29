@@ -138,7 +138,7 @@ class Grid {
                     console.log(childToCurrent);
 
                     // Update child values
-                    child.g = currentNode.g + 1;
+                    child.g = currentNode.g + childToCurrent;
                     child.h = childToEnd;
                     child.f = child.g + child.h;
 
