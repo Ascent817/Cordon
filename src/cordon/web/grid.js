@@ -134,7 +134,7 @@ class Grid {
                 let isInClosed = false;
                 closed.forEach((element) => {
                     // If the positions of the nodes match, they're equal
-                    if (element.position[0] == child.position[0] && element.position[1] == child.position[1]) {
+                    if (this.CompareNodes(element, child)) {
                         isInClosed = true;
                     }
                 });
