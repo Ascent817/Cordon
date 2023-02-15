@@ -1,5 +1,5 @@
 /**
- * Provides an object to represent a pathfinding grid of nodes.
+ * Provides an object to represent a grid of nodes.
  * This verision is for use as an ES6 module with nodejs
  */
  class Grid {
